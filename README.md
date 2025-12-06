@@ -111,9 +111,6 @@ Login Successful!
 
  Roles and Permissions
 Role	Add	Display	Search	Update	Delete	Topper
-Admin	✔	✔	✔	✔	✔	✔
-Teacher	✔	✔	✔	✔	✖	✔
-👩‍💻 Developer
 
  G.Sai Pravachana
 Coding Skills – Project Submission
