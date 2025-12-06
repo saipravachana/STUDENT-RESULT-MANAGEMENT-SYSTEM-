@@ -1,0 +1,6 @@
+101 Riya 89.5
+102 Aarav 76.0
+103 Tanvi 92.0
+104 Karan 67.5
+105 Meera 95.0
+106 Rahul 88.0
