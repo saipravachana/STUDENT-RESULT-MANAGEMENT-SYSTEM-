@@ -1,0 +1,216 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#define MAX_BOOKS 100
+#define FILE_NAME "books.txt"
+
+typedef struct {
+    int id;
+    char title[100];
+    char author[50];
+    float price;
+} Book;
+
+Book inventory[MAX_BOOKS];
+int bookCount = 0;
+
+// Function prototypes
+void loadInventory();
+void saveInventory();
+void simulateAddBook();
+void displayBooks();
+void simulateSearchBook();
+void simulateDeleteBook();
+int generateRandomID();
+float generateRandomPrice();
+void generateRandomTitle(char *buf);
+void generateRandomAuthor(char *buf);
+
+int main() {
+    srand(time(0));  // Random seed for simulation
+
+    loadInventory();
+    int choice;
+
+    while (1) {
+        printf("\n=== BOOK INVENTORY SIMULATION ===\n");
+        printf("1. Simulate Add Book\n");
+        printf("2. Display All Books\n");
+        printf("3. Simulate Search Book\n");
+        printf("4. Simulate Delete Book\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+
+        if (scanf("%d", &choice) != 1) {
+            printf("Invalid input!\n");
+            while (getchar() != '\n');
+            continue;
+        }
+
+        switch (choice) {
+            case 1: simulateAddBook(); break;
+            case 2: displayBooks(); break;
+            case 3: simulateSearchBook(); break;
+            case 4: simulateDeleteBook(); break;
+            case 5:
+                saveInventory();
+                printf("Exiting... Simulation saved.\n");
+                return 0;
+            default:
+                printf("Invalid choice! Try again.\n");
+        }
+    }
+    return 0;
+}
+
+// Load books from file
+void loadInventory() {
+    FILE *file = fopen(FILE_NAME, "r");
+    if (!file) return;
+
+    while (fscanf(file, "%d,%99[^,],%49[^,],%f\n",
+                  &inventory[bookCount].id,
+                  inventory[bookCount].title,
+                  inventory[bookCount].author,
+                  &inventory[bookCount].price) == 4) {
+        bookCount++;
+        if (bookCount >= MAX_BOOKS) break;
+    }
+
+    fclose(file);
+    printf("Loaded %d books from file.\n", bookCount);
+}
+
+// Save books to file
+void saveInventory() {
+    FILE *file = fopen(FILE_NAME, "w");
+    if (!file) {
+        printf("Error saving data!\n");
+        return;
+    }
+
+    for (int i = 0; i < bookCount; i++) {
+        fprintf(file, "%d,%s,%s,%.2f\n",
+                inventory[i].id,
+                inventory[i].title,
+                inventory[i].author,
+                inventory[i].price);
+    }
+
+    fclose(file);
+}
+
+// Generate random ID
+int generateRandomID() {
+    return rand() % 900 + 100;  // 100–999
+}
+
+// Generate random price
+float generateRandomPrice() {
+    return (rand() % 900) + 100; // ₹100–₹999
+}
+
+// Generate random title
+void generateRandomTitle(char *buf) {
+    sprintf(buf, "Book_%d", rand() % 500);
+}
+
+// Generate random author
+void generateRandomAuthor(char *buf) {
+    sprintf(buf, "Author_%d", rand() % 100);
+}
+
+// Simulate adding a book
+void simulateAddBook() {
+    if (bookCount >= MAX_BOOKS) {
+        printf("Inventory full!\n");
+        return;
+    }
+
+    printf("\n=== Simulation: Adding Book ===\n");
+
+    Book newBook;
+    newBook.id = generateRandomID();
+    generateRandomTitle(newBook.title);
+    generateRandomAuthor(newBook.author);
+    newBook.price = generateRandomPrice();
+
+    printf("Generated ID: %d\n", newBook.id);
+    printf("Generated Title: %s\n", newBook.title);
+    printf("Generated Author: %s\n", newBook.author);
+    printf("Generated Price: ₹%.2f\n", newBook.price);
+
+    inventory[bookCount++] = newBook;
+    saveInventory();
+    printf("Book added automatically!\n");
+}
+
+// Display all books
+void displayBooks() {
+    printf("\n=== Inventory ===\n");
+
+    if (bookCount == 0) {
+        printf("No books available.\n");
+        return;
+    }
+
+    printf("\n%-10s %-30s %-20s %-10s\n", "ID", "Title", "Author", "Price");
+    printf("---------------------------------------------------------------\n");
+
+    for (int i = 0; i < bookCount; i++) {
+        printf("%-10d %-30s %-20s %-10.2f\n",
+               inventory[i].id,
+               inventory[i].title,
+               inventory[i].author,
+               inventory[i].price);
+    }
+}
+
+// Simulate search
+void simulateSearchBook() {
+    printf("\n=== Simulation: Searching Book ===\n");
+
+    if (bookCount == 0) {
+        printf("No books to search.\n");
+        return;
+    }
+
+    int id = inventory[rand() % bookCount].id; // pick random existing ID
+    printf("Searching for ID: %d\n", id);
+
+    for (int i = 0; i < bookCount; i++) {
+        if (inventory[i].id == id) {
+            printf("Book Found!\n");
+            printf("ID: %d\n", inventory[i].id);
+            printf("Title: %s\n", inventory[i].title);
+            printf("Author: %s\n", inventory[i].author);
+            printf("Price: ₹%.2f\n", inventory[i].price);
+            return;
+        }
+    }
+}
+
+// Simulate delete
+void simulateDeleteBook() {
+    printf("\n=== Simulation: Deleting Book ===\n");
+
+    if (bookCount == 0) {
+        printf("No books to delete.\n");
+        return;
+    }
+
+    int index = rand() % bookCount;
+    int id = inventory[index].id;
+
+    printf("Deleting Book with ID: %d\n", id);
+
+    for (int i = index; i < bookCount - 1; i++) {
+        inventory[i] = inventory[i + 1];
+    }
+    bookCount--;
+
+    saveInventory();
+    printf("Book deleted successfully!\n");
+}
