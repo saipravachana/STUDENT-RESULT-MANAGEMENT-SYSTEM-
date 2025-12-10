@@ -1,0 +1,5 @@
+101,Book_101,Author_1,250.50
+102,Book_102,Author_2,320.75
+103,Book_103,Author_3,180.00
+104,Book_104,Author_4,450.25
+105,Book_105,Author_5,299.99
